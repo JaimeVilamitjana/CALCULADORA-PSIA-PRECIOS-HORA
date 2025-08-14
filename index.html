@@ -31,7 +31,7 @@
             background-position: center;
             background-size: 50%;
             opacity: 0.2; /* Solo la imagen tiene opacidad */
-            z-index: -1; /* Mueve la imagen al fondo */
+            z-index: 1; /* Mueve la imagen al fondo */
         }
 
         .calculator-container {
@@ -41,7 +41,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             text-align: center;
-            z-index: 1; /* Asegura que este contenedor esté encima de la marca de agua */
+            z-index: -1; /* Asegura que este contenedor esté encima de la marca de agua */
         }
 
         h1 { color: #333; }
