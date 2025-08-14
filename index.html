@@ -14,14 +14,24 @@
             margin: 0;
             padding: 20px;
             background-color: #f4f4f9;
-
-            /* Marca de agua - URL de Google Drive con el ID de tu logo */
+            position: relative; /* Contexto de posicionamiento para la marca de agua */
+        }
+        
+        /* Esto crea la marca de agua como un elemento separado */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('https://i.imgur.com/2jsLu0x.png');
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
             background-size: 50%;
-            opacity: 0.1;
+            opacity: 0.2; /* Solo la imagen tiene opacidad */
+            z-index: -1; /* Mueve la imagen al fondo */
         }
 
         .calculator-container {
@@ -31,15 +41,13 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             text-align: center;
-            z-index: 1;
-            opacity: 1;
+            z-index: 1; /* Asegura que este contenedor esté encima de la marca de agua */
         }
 
         h1 { color: #333; }
         p { color: #666; }
         .input-group { margin: 20px 0; }
         label { font-weight: bold; }
-
         input {
             width: calc(100% - 22px);
             padding: 10px;
@@ -48,7 +56,6 @@
             border-radius: 5px;
             margin-top: 5px;
         }
-
         button {
             background-color: #007bff;
             color: white;
@@ -60,7 +67,6 @@
             transition: background-color 0.3s;
         }
         button:hover { background-color: #0056b3; }
-
         .results-container { margin-top: 20px; text-align: left; }
         .result-item {
             padding: 10px 0;
@@ -91,12 +97,10 @@
         function calculate() {
             const bap = parseFloat(document.getElementById('bapInput').value);
             const resultsDiv = document.getElementById('results');
-
             if (isNaN(bap) || bap <= 0) {
                 resultsDiv.innerHTML = "<p style='color: red;'>Por favor, introduce un Bruto Anual Pactado (BAP) válido.</p>";
                 return;
             }
-
             const hoursPerYear = 1780;
             const horaOrdinaria = bap / hoursPerYear;
             const nocturnidad = horaOrdinaria * 0.25;
@@ -105,7 +109,6 @@
             const horaFestivaNocturna = horaFestiva + nocturnidad;
             const horaFestivaCalendarizada = horaOrdinaria * 0.75;
             const horaFestivaCalendarizadaNocturna = horaFestivaCalendarizada + (horaFestivaCalendarizada * 0.25);
-
             resultsDiv.innerHTML = `
                 <div class="result-item"><strong>Hora ordinaria:</strong> <span>${horaOrdinaria.toFixed(2)} €</span></div>
                 <div class="result-item"><strong>Hora extraordinaria:</strong> <span>${horaExtraordinaria.toFixed(2)} €</span></div>
