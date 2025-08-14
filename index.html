@@ -1,23 +1,23 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Precios por Hora</title>
+    <title>Calculadora de Salario por Hora</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f9;
-            position: relative; /* Contexto de posicionamiento para la marca de agua */
+            background-color: #e9ecef;
+            position: relative;
         }
-        
-        /* Esto crea la marca de agua como un elemento separado */
+
         body::before {
             content: "";
             position: absolute;
@@ -30,93 +30,174 @@
             background-attachment: fixed;
             background-position: center;
             background-size: 50%;
-            opacity: 0.2; /* Solo la imagen tiene opacidad */
-            z-index: 1; /* Mueve la imagen al fondo */
+            opacity: 0.2;
+            z-index: -1;
         }
 
         .calculator-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: transparent;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             max-width: 500px;
+            width: 100%;
             text-align: center;
-            z-index: -1; /* Asegura que este contenedor esté encima de la marca de agua */
+            z-index: 1;
         }
 
-        h1 { color: #333; }
-        p { color: #666; }
-        .input-group { margin: 20px 0; }
-        label { font-weight: bold; }
-        input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 5px;
+        h1, p, .result-label, .result-value {
+            color: #212529;
         }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
         button {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 5px;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
+            width: 100%;
         }
-        button:hover { background-color: #0056b3; }
-        .results-container { margin-top: 20px; text-align: left; }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results-container {
+            margin-top: 30px;
+            text-align: left;
+        }
+
         .result-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
             font-size: 16px;
         }
-        .result-item:last-child { border-bottom: none; }
-        .result-item span { font-weight: bold; color: #007bff; }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="calculator-container">
-        <h1>Calculadora de Precios por Hora</h1>
-        <p>Introduce tu Bruto Anual Pactado (BAP) y haz clic en "Calcular" para ver tus tarifas horarias.</p>
+        <h1>Calculadora de Salario por Hora</h1>
+        <p>Introduce tu **Bruto Anual Pactado (BAP)** para calcular las tarifas por hora.</p>
 
         <div class="input-group">
-            <label for="bapInput">Bruto Anual Pactado (BAP):</label>
+            <label for="bapInput">Bruto Anual Pactado (BAP) en €:</label>
             <input type="number" id="bapInput" placeholder="Ej: 18000">
         </div>
 
         <button onclick="calculate()">Calcular</button>
 
-        <div id="results" class="results-container">
-            </div>
+        <div id="results" class="results-container"></div>
     </div>
 
     <script>
         function calculate() {
             const bap = parseFloat(document.getElementById('bapInput').value);
             const resultsDiv = document.getElementById('results');
+            
             if (isNaN(bap) || bap <= 0) {
-                resultsDiv.innerHTML = "<p style='color: red;'>Por favor, introduce un Bruto Anual Pactado (BAP) válido.</p>";
+                resultsDiv.innerHTML = `<p class="error-message">Por favor, introduce un Bruto Anual Pactado (BAP) válido.</p>`;
                 return;
             }
+            
             const hoursPerYear = 1780;
+            
+            // Cálculos
             const horaOrdinaria = bap / hoursPerYear;
-            const nocturnidad = horaOrdinaria * 0.25;
+            const plusNocturnidad = horaOrdinaria * 0.25;
             const horaExtraordinaria = horaOrdinaria * 1.04;
             const horaFestiva = horaOrdinaria * 1.75;
-            const horaFestivaNocturna = horaFestiva + nocturnidad;
             const horaFestivaCalendarizada = horaOrdinaria * 0.75;
-            const horaFestivaCalendarizadaNocturna = horaFestivaCalendarizada + (horaFestivaCalendarizada * 0.25);
+
+            // Fórmulas corregidas según tus indicaciones
+            const horaFestivaNocturna = horaFestiva + (horaFestiva * 0.25);
+            const horaFestivaCalendarizadaNocturna = horaFestivaCalendarizada + (horaFestiva * 0.25);
+            
             resultsDiv.innerHTML = `
-                <div class="result-item"><strong>Hora ordinaria:</strong> <span>${horaOrdinaria.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Hora extraordinaria:</strong> <span>${horaExtraordinaria.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Plus de nocturnidad:</strong> <span>${nocturnidad.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Hora festiva:</strong> <span>${horaFestiva.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Hora festiva nocturna:</strong> <span>${horaFestivaNocturna.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Hora festiva calendarizada:</strong> <span>${horaFestivaCalendarizada.toFixed(2)} €</span></div>
-                <div class="result-item"><strong>Hora festiva calendarizada nocturna:</strong> <span>${horaFestivaCalendarizadaNocturna.toFixed(2)} €</span></div>
+                <div class="result-item">
+                    <span class="result-label">Hora ordinaria:</span>
+                    <span class="result-value">${horaOrdinaria.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Hora extraordinaria:</span>
+                    <span class="result-value">${horaExtraordinaria.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Plus de nocturnidad:</span>
+                    <span class="result-value">${plusNocturnidad.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Hora festiva:</span>
+                    <span class="result-value">${horaFestiva.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Hora festiva nocturna:</span>
+                    <span class="result-value">${horaFestivaNocturna.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Hora festiva calendarizada:</span>
+                    <span class="result-value">${horaFestivaCalendarizada.toFixed(2)} €</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Hora festiva calendarizada nocturna:</span>
+                    <span class="result-value">${horaFestivaCalendarizadaNocturna.toFixed(2)} €</span>
+                </div>
             `;
         }
     </script>
