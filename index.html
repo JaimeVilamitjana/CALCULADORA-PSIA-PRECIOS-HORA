@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Precios por Hora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+
+            /* Marca de agua - URL de Google Drive con el ID de tu logo */
+            background-image: url('https://i.imgur.com/2jsLu0x.png');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: 50%;
+            opacity: 0.1;
+        }
+
+        .calculator-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+            z-index: 1;
+            opacity: 1;
+        }
+
+        h1 { color: #333; }
+        p { color: #666; }
+        .input-group { margin: 20px 0; }
+        label { font-weight: bold; }
+
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+
+        .results-container { margin-top: 20px; text-align: left; }
+        .result-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item span { font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Calculadora de Precios por Hora</h1>
+        <p>Introduce tu Bruto Anual Pactado (BAP) y haz clic en "Calcular" para ver tus tarifas horarias.</p>
+
+        <div class="input-group">
+            <label for="bapInput">Bruto Anual Pactado (BAP):</label>
+            <input type="number" id="bapInput" placeholder="Ej: 18000">
+        </div>
+
+        <button onclick="calculate()">Calcular</button>
+
+        <div id="results" class="results-container">
+            </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const bap = parseFloat(document.getElementById('bapInput').value);
+            const resultsDiv = document.getElementById('results');
+
+            if (isNaN(bap) || bap <= 0) {
+                resultsDiv.innerHTML = "<p style='color: red;'>Por favor, introduce un Bruto Anual Pactado (BAP) válido.</p>";
+                return;
+            }
+
+            const hoursPerYear = 1780;
+            const horaOrdinaria = bap / hoursPerYear;
+            const nocturnidad = horaOrdinaria * 0.25;
+            const horaExtraordinaria = horaOrdinaria * 1.04;
+            const horaFestiva = horaOrdinaria * 1.75;
+            const horaFestivaNocturna = horaFestiva + nocturnidad;
+            const horaFestivaCalendarizada = horaOrdinaria * 0.75;
+            const horaFestivaCalendarizadaNocturna = horaFestivaCalendarizada + (horaFestivaCalendarizada * 0.25);
+
+            resultsDiv.innerHTML = `
+                <div class="result-item"><strong>Hora ordinaria:</strong> <span>${horaOrdinaria.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Hora extraordinaria:</strong> <span>${horaExtraordinaria.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Plus de nocturnidad:</strong> <span>${nocturnidad.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Hora festiva:</strong> <span>${horaFestiva.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Hora festiva nocturna:</strong> <span>${horaFestivaNocturna.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Hora festiva calendarizada:</strong> <span>${horaFestivaCalendarizada.toFixed(2)} €</span></div>
+                <div class="result-item"><strong>Hora festiva calendarizada nocturna:</strong> <span>${horaFestivaCalendarizadaNocturna.toFixed(2)} €</span></div>
+            `;
+        }
+    </script>
+</body>
+</html>
